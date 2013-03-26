@@ -210,3 +210,23 @@ def complex_populate_check(self, uri, rows):
     cursor = self.session.open_cursor(uri, None)
     complex_populate_check_cursor(self, cursor, rows)
     cursor.close()
+
+# Check to ensure that a connection (if uri parameter is None) or table
+# contains a given configuration setting.
+def config_check(self, uri, config_key, config_val):
+    c_uri = "config:"
+    if uri != None:
+        c_uri += uri
+    print "config_check " + c_uri
+    cc = self.session.open_cursor(c_uri, None)
+
+    found = False
+    while not found:
+        nextret = cc.next()
+        if nextret != 0:
+            break
+        if config_key.equals(cc.get_key()):
+            found = config_val.equals(cc.get_value())
+    cc.close()
+    return found
+
